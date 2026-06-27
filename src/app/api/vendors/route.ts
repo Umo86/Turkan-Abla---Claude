@@ -10,7 +10,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import NextAuth from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth/authOptions';
 import { createConnectAccount } from '@/lib/stripe/stripe-connect';
 import type { Vendor, OpeningTimes } from '@/lib/firebase/types';
 
