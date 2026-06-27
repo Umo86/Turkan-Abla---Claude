@@ -2,41 +2,53 @@ import Link from 'next/link';
 
 export function Navigation() {
   return (
-    <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center">
-            <div className="text-2xl font-bold bg-gradient-to-r from-amber-700 to-orange-600 bg-clip-text text-transparent">
-              Türkan Abla
-            </div>
+    <header className="absolute top-0 inset-x-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+        <nav className="flex items-center justify-between rounded-full bg-[#2A211B]/80 backdrop-blur-md px-5 py-3 text-[#F4ECE1] shadow-lg shadow-black/10">
+          {/* Brand */}
+          <Link href="/" className="flex items-center gap-2 pl-2">
+            <span className="text-lg font-semibold tracking-wide font-serif">
+              Türkan&nbsp;Abla
+            </span>
           </Link>
 
-          {/* Navigation Links */}
-          <div className="hidden md:flex items-center gap-8">
-            <Link href="#services" className="text-gray-700 hover:text-amber-700 transition">
+          {/* Links */}
+          <div className="hidden md:flex items-center gap-1 text-sm">
+            <Link
+              href="#services"
+              className="px-4 py-2 rounded-full hover:bg-white/10 transition-colors"
+            >
               Services
             </Link>
-            <Link href="#about" className="text-gray-700 hover:text-amber-700 transition">
+            <Link
+              href="#about"
+              className="px-4 py-2 rounded-full hover:bg-white/10 transition-colors"
+            >
               About
             </Link>
-            <Link href="#pricing" className="text-gray-700 hover:text-amber-700 transition">
+            <Link
+              href="#pricing"
+              className="px-4 py-2 rounded-full hover:bg-white/10 transition-colors"
+            >
               Pricing
             </Link>
-            <Link href="#contact" className="text-gray-700 hover:text-amber-700 transition">
+            <Link
+              href="#contact"
+              className="px-4 py-2 rounded-full hover:bg-white/10 transition-colors"
+            >
               Contact
             </Link>
           </div>
 
-          {/* CTA Link styled as button */}
+          {/* CTA */}
           <Link
             href="/auth/signup/customer"
-            className="inline-flex items-center justify-center h-10 px-6 rounded-lg text-base font-semibold text-white bg-gradient-to-r from-amber-700 to-orange-600 hover:from-amber-800 hover:to-orange-700 transition-all"
+            className="inline-flex items-center justify-center h-10 px-6 rounded-full text-sm font-medium bg-[#F4ECE1] text-[#2A211B] hover:bg-white transition-colors"
           >
             Book Now
           </Link>
-        </div>
+        </nav>
       </div>
-    </nav>
+    </header>
   );
 }

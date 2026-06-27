@@ -50,22 +50,24 @@ export function ContactSection() {
   };
 
   return (
-    <section id="contact" className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
+    <section id="contact" className="py-24 px-4 sm:px-6 lg:px-8 bg-[#F4ECE1]">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl sm:text-5xl font-bold mb-4">
-            <span className="bg-gradient-to-r from-amber-700 to-orange-600 bg-clip-text text-transparent">
-              Get In Touch
-            </span>
+        <div className="text-center mb-12">
+          <p className="text-sm uppercase tracking-[0.2em] text-[#A9755A] mb-3">
+            Contact
+          </p>
+          <h2 className="font-serif text-4xl sm:text-5xl text-[#2A211B] leading-tight">
+            Get In Touch
           </h2>
-          <p className="text-lg text-gray-600">
-            Have questions? We&apos;d love to hear from you. Send us a message and we&apos;ll get back to you as soon as possible.
+          <p className="mt-4 text-[#6F6055] max-w-xl mx-auto">
+            Have questions? We&apos;d love to hear from you. Send us a message
+            and we&apos;ll get back to you as soon as possible.
           </p>
         </div>
 
         {/* Form */}
-        <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-8 lg:p-12">
+        <div className="bg-[#EBE0D1] rounded-[2rem] p-8 lg:p-12">
           {submitted && (
             <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
               Thank you for contacting us. We&apos;ll get back to you soon!
@@ -84,7 +86,7 @@ export function ContactSection() {
               <div>
                 <label
                   htmlFor="contact-name"
-                  className="block text-sm font-semibold text-gray-900 mb-2"
+                  className="block text-sm font-medium text-[#2A211B] mb-2"
                 >
                   Full Name
                 </label>
@@ -96,7 +98,7 @@ export function ContactSection() {
                   onChange={handleChange}
                   required
                   minLength={2}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-700 focus:border-transparent outline-none transition bg-white"
+                  className="w-full px-4 py-3 border border-[#2A211B]/15 rounded-xl focus:ring-2 focus:ring-[#A9755A] focus:border-transparent outline-none transition bg-[#F4ECE1]"
                   placeholder="Your name"
                 />
               </div>
@@ -105,7 +107,7 @@ export function ContactSection() {
               <div>
                 <label
                   htmlFor="contact-email"
-                  className="block text-sm font-semibold text-gray-900 mb-2"
+                  className="block text-sm font-medium text-[#2A211B] mb-2"
                 >
                   Email Address
                 </label>
@@ -116,7 +118,7 @@ export function ContactSection() {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-700 focus:border-transparent outline-none transition bg-white"
+                  className="w-full px-4 py-3 border border-[#2A211B]/15 rounded-xl focus:ring-2 focus:ring-[#A9755A] focus:border-transparent outline-none transition bg-[#F4ECE1]"
                   placeholder="your.email@example.com"
                 />
               </div>
@@ -126,7 +128,7 @@ export function ContactSection() {
             <div>
               <label
                 htmlFor="contact-phone"
-                className="block text-sm font-semibold text-gray-900 mb-2"
+                className="block text-sm font-medium text-[#2A211B] mb-2"
               >
                 Phone Number <span className="text-gray-400 font-normal">(Optional)</span>
               </label>
@@ -145,7 +147,7 @@ export function ContactSection() {
             <div>
               <label
                 htmlFor="contact-message"
-                className="block text-sm font-semibold text-gray-900 mb-2"
+                className="block text-sm font-medium text-[#2A211B] mb-2"
               >
                 Message
               </label>
@@ -157,7 +159,7 @@ export function ContactSection() {
                 required
                 minLength={10}
                 rows={6}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-700 focus:border-transparent outline-none transition resize-none bg-white"
+                className="w-full px-4 py-3 border border-[#2A211B]/15 rounded-xl focus:ring-2 focus:ring-[#A9755A] focus:border-transparent outline-none transition resize-none bg-[#F4ECE1]"
                 placeholder="Tell us how we can help..."
               />
             </div>
@@ -167,7 +169,7 @@ export function ContactSection() {
               type="submit"
               fullWidth
               disabled={loading}
-              className="bg-gradient-to-r from-amber-700 to-orange-600 hover:from-amber-800 hover:to-orange-700 text-white font-bold py-3 rounded-lg transition-all focus:ring-amber-500"
+              className="bg-[#2A211B] hover:bg-[#A9755A] text-[#F4ECE1] font-medium py-3 rounded-full transition-colors focus:ring-[#A9755A]"
             >
               {loading ? 'Sending...' : 'Send Message'}
             </Button>
@@ -175,21 +177,21 @@ export function ContactSection() {
         </div>
 
         {/* Contact Info Row */}
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="mt-14 grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="text-center">
             <div className="text-3xl mb-3">📧</div>
-            <h4 className="font-bold text-gray-900 mb-1">Email</h4>
-            <p className="text-gray-600 text-sm">support@turkanabla.uk</p>
+            <h4 className="font-semibold text-[#2A211B] mb-1">Email</h4>
+            <p className="text-[#6F6055] text-sm">support@turkanabla.uk</p>
           </div>
           <div className="text-center">
             <div className="text-3xl mb-3">📱</div>
-            <h4 className="font-bold text-gray-900 mb-1">Phone</h4>
-            <p className="text-gray-600 text-sm">+44 (0) 123 456 7890</p>
+            <h4 className="font-semibold text-[#2A211B] mb-1">Phone</h4>
+            <p className="text-[#6F6055] text-sm">+44 (0) 123 456 7890</p>
           </div>
           <div className="text-center">
             <div className="text-3xl mb-3">📍</div>
-            <h4 className="font-bold text-gray-900 mb-1">Location</h4>
-            <p className="text-gray-600 text-sm">United Kingdom</p>
+            <h4 className="font-semibold text-[#2A211B] mb-1">Location</h4>
+            <p className="text-[#6F6055] text-sm">United Kingdom</p>
           </div>
         </div>
       </div>
