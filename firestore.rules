@@ -1,0 +1,9 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Placeholder: will be expanded in Task 2.3 with full security rules
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
