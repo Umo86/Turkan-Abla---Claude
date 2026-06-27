@@ -36,7 +36,7 @@ service cloud.firestore {
       // Services - vendor reads/writes own, customer reads for viewing
       match /services/{serviceId} {
         allow read: if isAuthenticated();
-        allow write: if isAuthenticated() && isOwner(resource.data.vendorId) || isAdmin();
+        allow write: if isAuthenticated() && (isOwner(resource.data.vendorId) || isAdmin());
       }
 
       // Staff - vendor reads own, staff reads/writes self
@@ -53,7 +53,7 @@ service cloud.firestore {
           resource.data.customerId == userId() ||
           isAdmin()
         );
-        allow create: if isCustomer() && request.resource.data.vendorId == vendorId;
+        allow create: if isCustomer() && request.resource.data.vendorId == vendorId && request.resource.data.customerId == userId();
         allow update: if isOwner(resource.data.vendorId) || isOwner(resource.data.customerId) || isAdmin();
       }
 
@@ -106,7 +106,7 @@ service cloud.firestore {
     // Offers - vendor reads own, customer reads public
     match /offers/{offerId} {
       allow read: if isAuthenticated() && (resource.data.vendorId == userVendorId() || isCustomer());
-      allow write: if isVendor() && request.resource.data.vendorId == userVendorId() || isAdmin();
+      allow write: if isVendor() && (request.resource.data.vendorId == userVendorId() || isAdmin());
     }
 
     // Reviews - customer writes own, all read public

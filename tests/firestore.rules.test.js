@@ -69,7 +69,9 @@ const rules = {
 
   /** /vendors/{vendorId}/bookings/{bookingId} – create */
   vendorBookingsCreate: (ctx, newData, vendorId) =>
-    helpers.isCustomer(ctx) && newData.vendorId === vendorId,
+    helpers.isCustomer(ctx) &&
+    newData.vendorId === vendorId &&
+    newData.customerId === helpers.userId(ctx),
 
   /** /suppressions/{id} – write */
   suppressionsWrite: (ctx) => helpers.isAdmin(ctx),
@@ -308,6 +310,13 @@ describe('Firestore Security Rules – Admin-SDK-only writes', () => {
 // ---------------------------------------------------------------------------
 
 describe('Firestore Security Rules – IDOR prevention', () => {
+  it('customer should not create a booking for another customer', () => {
+    const ctx = customerCtx('customer1');
+    // Booking create: isCustomer() AND vendorId matches path AND customerId == userId()
+    const newData = { customerId: 'customer2', vendorId: 'vendor1' };
+    expect(rules.vendorBookingsCreate(ctx, newData, 'vendor1')).toBe(false);
+  });
+
   it('customer should not create a review for another customer', () => {
     const ctx = customerCtx('customer1');
     // Review create: isCustomer() && customerId == userId()

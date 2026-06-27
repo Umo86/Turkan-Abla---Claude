@@ -102,7 +102,8 @@ const rules = {
     vendorId: string
   ) =>
     helpers.isCustomer(ctx) &&
-    newData.vendorId === vendorId,
+    newData.vendorId === vendorId &&
+    newData.customerId === helpers.userId(ctx),
 
   /** /suppressions/{id} – write */
   suppressionsWrite: (ctx: EvalContext) => helpers.isAdmin(ctx),
@@ -347,13 +348,9 @@ describe('Firestore Security Rules – IDOR prevention', () => {
     const ctx = customerCtx('customer1');
 
     // Attempt to create a booking with customerId belonging to someone else
+    // The booking create rule requires isCustomer() AND vendorId matches path AND customerId == userId()
     const newData: ResourceData = { customerId: 'customer2', vendorId: 'vendor1' };
-
-    // The booking create rule requires isCustomer() AND customerId == userId
-    // There is no explicit customerId check in the booking create rule,
-    // but IDOR is prevented via the review create rule which does check customerId
-    const reviewCtx = customerCtx('customer1');
-    expect(rules.reviewsCreate(reviewCtx, { customerId: 'customer2' })).toBe(false);
+    expect(rules.vendorBookingsCreate(ctx, newData, 'vendor1')).toBe(false);
   });
 
   it('customer can create a booking for themselves', () => {
