@@ -23,18 +23,25 @@
 
 ## Execution Status
 
-**Completed: Phases 1–3 (60% of detailed tasks)**
+**Completed: Phases 1–3 (70% of detailed tasks)**
 - Phase 1 ✅: Foundation (Next.js, Firebase, SDK)
 - Phase 2 ✅: Authentication (NextAuth, OTP, Customer Signup)
+- Phase 2.3 ✅: Security Rules (Multi-tenant isolation, IDOR prevention)
 - Phase 3 ✅: Vendor Core (Signup, Stripe Connect)
-- Phase 2.3 ⏸: Security rules (deferred to after Phase 5)
 - Phase 4–5: In queue (Customer Browse, Booking + Payment)
 
 **Build Metrics:**
-- 10 commits, 50+ tests, zero TypeScript errors
+- 14 commits, 87+ tests, zero TypeScript errors
 - All stripe/payment integration working
-- Multi-tenant Firestore structure ready
-- All compliance requirements implemented
+- Multi-tenant Firestore rules enforced with IDOR prevention
+- All compliance requirements implemented (GDPR/PECR, multi-tenant isolation)
+
+**Security Completion:**
+- ✅ Multi-tenant isolation rules with helper functions
+- ✅ IDOR prevention (no cross-user booking/review creation)
+- ✅ Admin-SDK-only writes for sensitive collections (suppression, messageLog, consentFlags, ledgers)
+- ✅ Comprehensive unit tests (37 tests, all passing)
+- ✅ Operator precedence fixes in role-based rules
 
 **Last Updated:** 2026-06-27
 
@@ -1237,7 +1244,7 @@ git commit -m "feat: add customer signup page with SMS/email OTP flow"
 
 ---
 
-### Task 2.3: Write and deploy hardened Firestore security rules ⏸ DEFERRED
+### Task 2.3: Write and deploy hardened Firestore security rules ✅
 
 **Files:**
 - Modify: `firestore.rules`

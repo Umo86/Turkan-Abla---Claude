@@ -7,9 +7,10 @@
 - [x] Task 1.2: Firebase emulator setup (ab8e207)
 - [x] Task 1.3: Firebase client/admin SDK + types (b1f044e)
 
-### Phase 2: Authentication ✅ COMPLETE (2/2)
+### Phase 2: Authentication ✅ COMPLETE (3/3)
 - [x] Task 2.1: NextAuth with OTP verification (65fcb10 + fix 7465509)
 - [x] Task 2.2: Customer signup page (932505d)
+- [x] Task 2.3: Firestore security rules (6a05664 + fix b390113)
 
 ### Phase 3: Core Platform ✅ COMPLETE (1/1)
 - [x] Task 3.1: Vendor signup + Stripe Connect (71704d0 + fixes 61c82b1 + c8e2084)
@@ -27,10 +28,11 @@
 - Task 1.3: commit b1f044e ✓
 - Task 2.1: commits 65fcb10 + 7465509 (26 tests) ✓
 - Task 2.2: commit 932505d (20+ tests) ✓
+- Task 2.3: commits 6a05664 + b390113 (37 tests, IDOR + precedence fixes) ✓
 - Task 3.1: commits 71704d0 + 61c82b1 + c8e2084 (fixes + approval) ✓
 
 ---
-## All Commits (10 total)
+## All Commits (14 total)
 1. 3aa0871 - Next.js init
 2. ab8e207 - Firebase emulator
 3. b1f044e - Firebase SDK + types
@@ -45,8 +47,9 @@
 ---
 ## Summary
 
-**Progress: 6 of 10 detailed tasks complete (60%)**
-- Phase 1 & 2 complete (Auth + Foundation)
+**Progress: 7 of 10 detailed tasks complete (70%)**
+- Phase 1 complete (Foundation)
+- Phase 2 complete (Auth + Security)
 - Phase 3 complete (Vendor onboarding + Stripe)
 - Phases 4 & 5 pending (Browse + Book + Pay)
 
@@ -59,12 +62,11 @@
 **Remaining:**
 - Phase 4: Customer homepage (search, browse, vendor profile)
 - Phase 5: Booking flow (date/time selection, Stripe payment)
-- Phase 2.3: Firestore security rules (full multi-tenant isolation)
 - Phases 6-12: Staff management, loyalty, marketing suite, analytics, bilingual, security testing
 
 ---
 ## Notes
-- Velocity: ~6 tasks + 3 fix rounds in subagent-driven approach
-- All critical path foundation complete
+- Velocity: ~7 tasks + 4 fix rounds in subagent-driven approach
+- All critical path foundation + security rules complete
 - Ready to build shopping experience (Phase 4) and transactions (Phase 5)
-- Security rules and compliance work deferred (Phase 2.3 after current core flows)
+- Multi-tenant isolation fully enforced at database layer with comprehensive unit tests
