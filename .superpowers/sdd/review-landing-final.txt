@@ -1,0 +1,1134 @@
+=== COMMITS (5a6b7c6..HEAD) ===
+40168d1 docs: update SDD ledger for landing tasks 1-7
+27375ac feat: add CTA section and footer to complete landing page
+544edb3 docs: add task 6 report and update progress
+b0f20e3 feat: add contact form and contact section with API endpoint
+f5d1056 feat: add testimonials section with placeholder review structure
+bd9ed18 feat: add pricing section with three pricing tiers
+345c9b3 feat: add about section with company story and values
+df08d68 feat: add services section with 8 service category cards
+63fec1e feat: add landing page hero section and navigation
+
+=== STAT ===
+ .superpowers/sdd/progress.md                   |  10 +
+ .superpowers/sdd/review-landing-1.txt          | 209 ++++++++++++++++
+ .superpowers/sdd/review-landing-2.txt          | 202 ++++++++++++++++
+ .superpowers/sdd/review-landing-3.txt          | 126 ++++++++++
+ .superpowers/sdd/review-landing-4.txt          | 181 ++++++++++++++
+ .superpowers/sdd/review-landing-5.txt          | 118 +++++++++
+ .superpowers/sdd/review-landing-6.txt          | 297 +++++++++++++++++++++++
+ .superpowers/sdd/review-landing-7.txt          | 315 +++++++++++++++++++++++++
+ .superpowers/sdd/task-landing-1-report.md      |  30 +++
+ .superpowers/sdd/task-landing-2-report.md      |  31 +++
+ .superpowers/sdd/task-landing-3-report.md      |  18 ++
+ .superpowers/sdd/task-landing-4-report.md      |  21 ++
+ .superpowers/sdd/task-landing-5-report.md      |  17 ++
+ .superpowers/sdd/task-landing-6-report.md      |  76 ++++++
+ .superpowers/sdd/task-landing-7-report.md      |  12 +
+ src/app/api/contact/route.ts                   |  45 ++++
+ src/app/page.tsx                               |  88 +++----
+ src/components/landing/AboutSection.tsx        |  85 +++++++
+ src/components/landing/CTASection.tsx          |  31 +++
+ src/components/landing/ContactSection.tsx      | 198 ++++++++++++++++
+ src/components/landing/Footer.tsx              |  99 ++++++++
+ src/components/landing/HeroSection.tsx         |  62 +++++
+ src/components/landing/Navigation.tsx          |  42 ++++
+ src/components/landing/PricingSection.tsx      | 138 +++++++++++
+ src/components/landing/ServiceCard.tsx         |  58 +++++
+ src/components/landing/ServicesSection.tsx     |  98 ++++++++
+ src/components/landing/TestimonialsSection.tsx |  73 ++++++
+ 27 files changed, 2619 insertions(+), 61 deletions(-)
+
+=== DIFF ===
+diff --git a/src/app/api/contact/route.ts b/src/app/api/contact/route.ts
+new file mode 100644
+index 0000000..288ac5d
+--- /dev/null
++++ b/src/app/api/contact/route.ts
+@@ -0,0 +1,45 @@
++import { NextResponse } from 'next/server';
++import { z } from 'zod';
++
++const contactSchema = z.object({
++  name: z.string().min(2),
++  email: z.string().email(),
++  message: z.string().min(10),
++  phone: z.string().optional(),
++});
++
++export async function POST(request: Request) {
++  try {
++    const body = await request.json();
++    const parsed = contactSchema.safeParse(body);
++
++    if (!parsed.success) {
++      return NextResponse.json(
++        { error: 'Invalid form data', details: parsed.error.flatten() },
++        { status: 400 }
++      );
++    }
++
++    const { name, email, message, phone } = parsed.data;
++
++    // TODO: Send email notification to admin
++    // For now, log the submission server-side (no real email sending)
++    console.log('Contact form submission:', {
++      name,
++      email,
++      phone,
++      message,
++      timestamp: new Date().toISOString(),
++    });
++
++    return NextResponse.json(
++      { success: true, message: 'Thank you for contacting us. We will get back to you soon.' },
++      { status: 200 }
++    );
++  } catch (error) {
++    return NextResponse.json(
++      { error: 'Failed to process contact form' },
++      { status: 500 }
++    );
++  }
++}
+diff --git a/src/app/page.tsx b/src/app/page.tsx
+index 3f36f7c..56787d6 100644
+--- a/src/app/page.tsx
++++ b/src/app/page.tsx
+@@ -1,65 +1,31 @@
+-import Image from "next/image";
++import type { Metadata } from 'next';
++import { Navigation } from '@/components/landing/Navigation';
++import { HeroSection } from '@/components/landing/HeroSection';
++import { ServicesSection } from '@/components/landing/ServicesSection';
++import { AboutSection } from '@/components/landing/AboutSection';
++import { PricingSection } from '@/components/landing/PricingSection';
++import { TestimonialsSection } from '@/components/landing/TestimonialsSection';
++import { ContactSection } from '@/components/landing/ContactSection';
++import { CTASection } from '@/components/landing/CTASection';
++import { Footer } from '@/components/landing/Footer';
+ 
+-export default function Home() {
++export const metadata: Metadata = {
++  title: 'Türkan Abla - Beauty Services Platform',
++  description: 'Book professional beauty and wellness services in the UK',
++};
++
++export default function LandingPage() {
+   return (
+-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+-        <Image
+-          className="dark:invert"
+-          src="/next.svg"
+-          alt="Next.js logo"
+-          width={100}
+-          height={20}
+-          priority
+-        />
+-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
+-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
+-            To get started, edit the page.tsx file.
+-          </h1>
+-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
+-            Looking for a starting point or more instructions? Head over to{" "}
+-            <a
+-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+-              className="font-medium text-zinc-950 dark:text-zinc-50"
+-            >
+-              Templates
+-            </a>{" "}
+-            or the{" "}
+-            <a
+-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+-              className="font-medium text-zinc-950 dark:text-zinc-50"
+-            >
+-              Learning
+-            </a>{" "}
+-            center.
+-          </p>
+-        </div>
+-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
+-          <a
+-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
+-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+-            target="_blank"
+-            rel="noopener noreferrer"
+-          >
+-            <Image
+-              className="dark:invert"
+-              src="/vercel.svg"
+-              alt="Vercel logomark"
+-              width={16}
+-              height={16}
+-            />
+-            Deploy Now
+-          </a>
+-          <a
+-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
+-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+-            target="_blank"
+-            rel="noopener noreferrer"
+-          >
+-            Documentation
+-          </a>
+-        </div>
+-      </main>
+-    </div>
++    <>
++      <Navigation />
++      <HeroSection />
++      <ServicesSection />
++      <AboutSection />
++      <PricingSection />
++      <TestimonialsSection />
++      <ContactSection />
++      <CTASection />
++      <Footer />
++    </>
+   );
+ }
+diff --git a/src/components/landing/AboutSection.tsx b/src/components/landing/AboutSection.tsx
+new file mode 100644
+index 0000000..6b6f6bb
+--- /dev/null
++++ b/src/components/landing/AboutSection.tsx
+@@ -0,0 +1,85 @@
++export function AboutSection() {
++  const values = [
++    {
++      title: 'Quality',
++      description: 'All our vendors are verified professionals with years of experience',
++      icon: '⭐',
++    },
++    {
++      title: 'Trust',
++      description: 'Secure payments, transparent pricing, and customer protection',
++      icon: '🔒',
++    },
++    {
++      title: 'Convenience',
++      description: 'Book instantly, pay online, and manage bookings from anywhere',
++      icon: '📱',
++    },
++    {
++      title: 'Community',
++      description: 'Supporting small businesses and connecting them with customers',
++      icon: '🤝',
++    },
++  ];
++
++  return (
++    <section id="about" className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-amber-50 to-orange-50">
++      <div className="max-w-7xl mx-auto">
++        {/* Header */}
++        <div className="text-center mb-16">
++          <h2 className="text-4xl sm:text-5xl font-bold mb-4">
++            <span className="bg-gradient-to-r from-amber-700 to-orange-600 bg-clip-text text-transparent">
++              About Türkan Abla
++            </span>
++          </h2>
++        </div>
++
++        {/* Two-column story block */}
++        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20">
++          {/* Text column */}
++          <div>
++            <h3 className="text-3xl font-bold mb-6 text-gray-900">
++              Connecting Beauty Professionals with Customers
++            </h3>
++            <p className="text-gray-700 mb-4 leading-relaxed">
++              Türkan Abla is a modern beauty and wellness services marketplace connecting
++              professional vendors with customers across the UK. We believe in making quality
++              personal care services accessible, convenient, and affordable for everyone.
++            </p>
++            <p className="text-gray-700 leading-relaxed">
++              Founded with a mission to support small beauty businesses and entrepreneurs, we&apos;ve
++              grown to become a trusted platform with hundreds of vendors and thousands of happy
++              customers.
++            </p>
++          </div>
++
++          {/* Decorative gradient panel */}
++          <div className="relative h-96 bg-gradient-to-br from-amber-200 to-orange-300 rounded-2xl shadow-xl overflow-hidden">
++            <div className="absolute inset-0 flex items-center justify-center text-6xl">
++              ✨
++            </div>
++            <div className="absolute top-6 right-6 w-24 h-24 bg-amber-400/30 rounded-full blur-xl" />
++            <div className="absolute bottom-6 left-6 w-32 h-32 bg-orange-400/30 rounded-full blur-xl" />
++          </div>
++        </div>
++
++        {/* Our Values grid */}
++        <div>
++          <h3 className="text-3xl font-bold mb-12 text-center text-gray-900">Our Values</h3>
++          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
++            {values.map((value) => (
++              <div
++                key={value.title}
++                className="bg-white rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow"
++              >
++                <div className="text-5xl mb-4">{value.icon}</div>
++                <h4 className="text-xl font-bold mb-2 text-gray-900">{value.title}</h4>
++                <p className="text-gray-600">{value.description}</p>
++              </div>
++            ))}
++          </div>
++        </div>
++      </div>
++    </section>
++  );
++}
+diff --git a/src/components/landing/CTASection.tsx b/src/components/landing/CTASection.tsx
+new file mode 100644
+index 0000000..e35078e
+--- /dev/null
++++ b/src/components/landing/CTASection.tsx
+@@ -0,0 +1,31 @@
++import Link from 'next/link';
++
++export function CTASection() {
++  return (
++    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-amber-500 to-orange-500">
++      <div className="max-w-4xl mx-auto text-center">
++        <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">
++          Ready to Transform Your Look?
++        </h2>
++        <p className="text-lg text-amber-50 mb-10 max-w-2xl mx-auto leading-relaxed">
++          Join thousands of satisfied customers and book your first service today. Secure payment, instant confirmation, and professional services.
++        </p>
++
++        <div className="flex flex-col sm:flex-row gap-4 justify-center">
++          <Link
++            href="/auth/signup/customer"
++            className="inline-flex items-center justify-center h-12 px-8 rounded-lg text-lg font-semibold bg-white text-amber-700 hover:bg-amber-50 transition-colors"
++          >
++            Book Now
++          </Link>
++          <Link
++            href="#contact"
++            className="inline-flex items-center justify-center h-12 px-8 rounded-lg text-lg font-semibold border-2 border-white text-white hover:bg-white/10 transition-colors"
++          >
++            Contact Us
++          </Link>
++        </div>
++      </div>
++    </section>
++  );
++}
+diff --git a/src/components/landing/ContactSection.tsx b/src/components/landing/ContactSection.tsx
+new file mode 100644
+index 0000000..a619543
+--- /dev/null
++++ b/src/components/landing/ContactSection.tsx
+@@ -0,0 +1,198 @@
++'use client';
++
++import { useState, FormEvent } from 'react';
++import { Button } from '@/components/ui/button';
++
++export function ContactSection() {
++  const [formData, setFormData] = useState({
++    name: '',
++    email: '',
++    phone: '',
++    message: '',
++  });
++  const [loading, setLoading] = useState(false);
++  const [submitted, setSubmitted] = useState(false);
++  const [error, setError] = useState<string | null>(null);
++
++  const handleChange = (
++    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
++  ) => {
++    const { name, value } = e.target;
++    setFormData((prev) => ({ ...prev, [name]: value }));
++  };
++
++  const handleSubmit = async (e: FormEvent) => {
++    e.preventDefault();
++    setLoading(true);
++    setError(null);
++
++    try {
++      const response = await fetch('/api/contact', {
++        method: 'POST',
++        headers: { 'Content-Type': 'application/json' },
++        body: JSON.stringify(formData),
++      });
++
++      if (response.ok) {
++        setSubmitted(true);
++        setFormData({ name: '', email: '', phone: '', message: '' });
++        setTimeout(() => setSubmitted(false), 5000);
++      } else {
++        const data = await response.json();
++        setError(data.error || 'Something went wrong. Please try again.');
++      }
++    } catch (err) {
++      console.error('Error submitting form:', err);
++      setError('Network error. Please check your connection and try again.');
++    } finally {
++      setLoading(false);
++    }
++  };
++
++  return (
++    <section id="contact" className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
++      <div className="max-w-4xl mx-auto">
++        {/* Header */}
++        <div className="text-center mb-16">
++          <h2 className="text-4xl sm:text-5xl font-bold mb-4">
++            <span className="bg-gradient-to-r from-amber-700 to-orange-600 bg-clip-text text-transparent">
++              Get In Touch
++            </span>
++          </h2>
++          <p className="text-lg text-gray-600">
++            Have questions? We&apos;d love to hear from you. Send us a message and we&apos;ll get back to you as soon as possible.
++          </p>
++        </div>
++
++        {/* Form */}
++        <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-8 lg:p-12">
++          {submitted && (
++            <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
++              Thank you for contacting us. We&apos;ll get back to you soon!
++            </div>
++          )}
++
++          {error && (
++            <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
++              {error}
++            </div>
++          )}
++
++          <form onSubmit={handleSubmit} className="space-y-6">
++            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
++              {/* Name */}
++              <div>
++                <label
++                  htmlFor="contact-name"
++                  className="block text-sm font-semibold text-gray-900 mb-2"
++                >
++                  Full Name
++                </label>
++                <input
++                  id="contact-name"
++                  type="text"
++                  name="name"
++                  value={formData.name}
++                  onChange={handleChange}
++                  required
++                  minLength={2}
++                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-700 focus:border-transparent outline-none transition bg-white"
++                  placeholder="Your name"
++                />
++              </div>
++
++              {/* Email */}
++              <div>
++                <label
++                  htmlFor="contact-email"
++                  className="block text-sm font-semibold text-gray-900 mb-2"
++                >
++                  Email Address
++                </label>
++                <input
++                  id="contact-email"
++                  type="email"
++                  name="email"
++                  value={formData.email}
++                  onChange={handleChange}
++                  required
++                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-700 focus:border-transparent outline-none transition bg-white"
++                  placeholder="your.email@example.com"
++                />
++              </div>
++            </div>
++
++            {/* Phone (optional) */}
++            <div>
++              <label
++                htmlFor="contact-phone"
++                className="block text-sm font-semibold text-gray-900 mb-2"
++              >
++                Phone Number <span className="text-gray-400 font-normal">(Optional)</span>
++              </label>
++              <input
++                id="contact-phone"
++                type="tel"
++                name="phone"
++                value={formData.phone}
++                onChange={handleChange}
++                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-700 focus:border-transparent outline-none transition bg-white"
++                placeholder="+44 123 456 7890"
++              />
++            </div>
++
++            {/* Message */}
++            <div>
++              <label
++                htmlFor="contact-message"
++                className="block text-sm font-semibold text-gray-900 mb-2"
++              >
++                Message
++              </label>
++              <textarea
++                id="contact-message"
++                name="message"
++                value={formData.message}
++                onChange={handleChange}
++                required
++                minLength={10}
++                rows={6}
++                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-700 focus:border-transparent outline-none transition resize-none bg-white"
++                placeholder="Tell us how we can help..."
++              />
++            </div>
++
++            {/* Submit Button */}
++            <Button
++              type="submit"
++              fullWidth
++              disabled={loading}
++              className="bg-gradient-to-r from-amber-700 to-orange-600 hover:from-amber-800 hover:to-orange-700 text-white font-bold py-3 rounded-lg transition-all"
++            >
++              {loading ? 'Sending...' : 'Send Message'}
++            </Button>
++          </form>
++        </div>
++
++        {/* Contact Info Row */}
++        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
++          <div className="text-center">
++            <div className="text-3xl mb-3">📧</div>
++            <h4 className="font-bold text-gray-900 mb-1">Email</h4>
++            <p className="text-gray-600 text-sm">support@turkanabla.uk</p>
++          </div>
++          <div className="text-center">
++            <div className="text-3xl mb-3">📱</div>
++            <h4 className="font-bold text-gray-900 mb-1">Phone</h4>
++            <p className="text-gray-600 text-sm">+44 (0) 123 456 7890</p>
++          </div>
++          <div className="text-center">
++            <div className="text-3xl mb-3">📍</div>
++            <h4 className="font-bold text-gray-900 mb-1">Location</h4>
++            <p className="text-gray-600 text-sm">United Kingdom</p>
++          </div>
++        </div>
++      </div>
++    </section>
++  );
++}
+diff --git a/src/components/landing/Footer.tsx b/src/components/landing/Footer.tsx
+new file mode 100644
+index 0000000..672465d
+--- /dev/null
++++ b/src/components/landing/Footer.tsx
+@@ -0,0 +1,99 @@
++import Link from 'next/link';
++
++export function Footer() {
++  return (
++    <footer className="bg-gray-900 text-gray-100 py-16 px-4 sm:px-6 lg:px-8">
++      <div className="max-w-7xl mx-auto">
++        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
++          {/* Brand */}
++          <div>
++            <h3 className="text-2xl font-bold bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent mb-4">
++              Türkan Abla
++            </h3>
++            <p className="text-gray-400 text-sm leading-relaxed">
++              Professional beauty and wellness services at your fingertips. Connecting trusted vendors with customers across the UK.
++            </p>
++          </div>
++
++          {/* Services */}
++          <div>
++            <h4 className="font-bold mb-4 text-white">Services</h4>
++            <ul className="space-y-2 text-sm text-gray-400">
++              <li>
++                <Link href="#services" className="hover:text-amber-400 transition-colors">
++                  All Services
++                </Link>
++              </li>
++              <li>
++                <Link href="#services" className="hover:text-amber-400 transition-colors">
++                  Hair Salon
++                </Link>
++              </li>
++              <li>
++                <Link href="#services" className="hover:text-amber-400 transition-colors">
++                  Spa &amp; Massage
++                </Link>
++              </li>
++              <li>
++                <Link href="#services" className="hover:text-amber-400 transition-colors">
++                  Fitness
++                </Link>
++              </li>
++            </ul>
++          </div>
++
++          {/* Company */}
++          <div>
++            <h4 className="font-bold mb-4 text-white">Company</h4>
++            <ul className="space-y-2 text-sm text-gray-400">
++              <li>
++                <Link href="#about" className="hover:text-amber-400 transition-colors">
++                  About Us
++                </Link>
++              </li>
++              <li>
++                <Link href="#pricing" className="hover:text-amber-400 transition-colors">
++                  Pricing
++                </Link>
++              </li>
++              <li>
++                <Link href="#contact" className="hover:text-amber-400 transition-colors">
++                  Contact
++                </Link>
++              </li>
++            </ul>
++          </div>
++
++          {/* Legal */}
++          <div>
++            <h4 className="font-bold mb-4 text-white">Legal</h4>
++            <ul className="space-y-2 text-sm text-gray-400">
++              <li>
++                <Link href="/" className="hover:text-amber-400 transition-colors">
++                  Privacy Policy
++                </Link>
++              </li>
++              <li>
++                <Link href="/" className="hover:text-amber-400 transition-colors">
++                  Terms of Service
++                </Link>
++              </li>
++              <li>
++                <Link href="/" className="hover:text-amber-400 transition-colors">
++                  Cookie Policy
++                </Link>
++              </li>
++            </ul>
++          </div>
++        </div>
++
++        {/* Bottom copyright */}
++        <div className="border-t border-gray-800 pt-8">
++          <p className="text-center text-gray-500 text-sm">
++            &copy; 2026 Türkan Abla.
++          </p>
++        </div>
++      </div>
++    </footer>
++  );
++}
+diff --git a/src/components/landing/HeroSection.tsx b/src/components/landing/HeroSection.tsx
+new file mode 100644
+index 0000000..228bf3d
+--- /dev/null
++++ b/src/components/landing/HeroSection.tsx
+@@ -0,0 +1,62 @@
++import Link from 'next/link';
++
++export function HeroSection() {
++  return (
++    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
++      {/* Background gradient */}
++      <div className="absolute inset-0 bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50" />
++
++      {/* Decorative elements */}
++      <div className="absolute top-20 right-10 w-72 h-72 bg-amber-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" />
++      <div className="absolute -bottom-8 left-20 w-72 h-72 bg-orange-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20" />
++
++      {/* Content */}
++      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
++        <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6">
++          <span className="bg-gradient-to-r from-amber-900 via-orange-700 to-rose-700 bg-clip-text text-transparent">
++            Transform Your Look
++          </span>
++          <br />
++          <span className="text-gray-800">with Expert Services</span>
++        </h1>
++
++        <p className="text-lg sm:text-xl text-gray-700 mb-8 max-w-2xl mx-auto leading-relaxed">
++          Discover professional beauty, wellness, and personal care services from trusted vendors across the UK. Book instantly, pay securely.
++        </p>
++
++        <div className="flex flex-col sm:flex-row gap-4 justify-center">
++          {/* Primary CTA */}
++          <Link
++            href="/home"
++            className="inline-flex items-center justify-center h-12 px-8 rounded-lg text-lg font-semibold text-white bg-gradient-to-r from-amber-700 to-orange-600 hover:from-amber-800 hover:to-orange-700 transition-all"
++          >
++            Browse Services
++          </Link>
++          {/* Secondary CTA */}
++          <Link
++            href="#services"
++            className="inline-flex items-center justify-center h-12 px-8 rounded-lg text-lg font-semibold border-2 border-amber-700 text-amber-700 hover:bg-amber-50 transition-all"
++          >
++            Learn More
++          </Link>
++        </div>
++
++        {/* Stats */}
++        <div className="mt-16 grid grid-cols-3 gap-8 pt-16 border-t border-gray-200">
++          <div>
++            <div className="text-3xl font-bold text-amber-700">500+</div>
++            <p className="text-gray-600">Professional Vendors</p>
++          </div>
++          <div>
++            <div className="text-3xl font-bold text-amber-700">10K+</div>
++            <p className="text-gray-600">Happy Customers</p>
++          </div>
++          <div>
++            <div className="text-3xl font-bold text-amber-700">50K+</div>
++            <p className="text-gray-600">Bookings Completed</p>
++          </div>
++        </div>
++      </div>
++    </section>
++  );
++}
+diff --git a/src/components/landing/Navigation.tsx b/src/components/landing/Navigation.tsx
+new file mode 100644
+index 0000000..988b74c
+--- /dev/null
++++ b/src/components/landing/Navigation.tsx
+@@ -0,0 +1,42 @@
++import Link from 'next/link';
++
++export function Navigation() {
++  return (
++    <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200">
++      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
++        <div className="flex justify-between items-center h-16">
++          {/* Logo */}
++          <Link href="/" className="flex items-center">
++            <div className="text-2xl font-bold bg-gradient-to-r from-amber-700 to-orange-600 bg-clip-text text-transparent">
++              Türkan Abla
++            </div>
++          </Link>
++
++          {/* Navigation Links */}
++          <div className="hidden md:flex items-center gap-8">
++            <Link href="#services" className="text-gray-700 hover:text-amber-700 transition">
++              Services
++            </Link>
++            <Link href="#about" className="text-gray-700 hover:text-amber-700 transition">
++              About
++            </Link>
++            <Link href="#pricing" className="text-gray-700 hover:text-amber-700 transition">
++              Pricing
++            </Link>
++            <Link href="#contact" className="text-gray-700 hover:text-amber-700 transition">
++              Contact
++            </Link>
++          </div>
++
++          {/* CTA Link styled as button */}
++          <Link
++            href="/auth/signup/customer"
++            className="inline-flex items-center justify-center h-10 px-6 rounded-lg text-base font-semibold text-white bg-gradient-to-r from-amber-700 to-orange-600 hover:from-amber-800 hover:to-orange-700 transition-all"
++          >
++            Book Now
++          </Link>
++        </div>
++      </div>
++    </nav>
++  );
++}
+diff --git a/src/components/landing/PricingSection.tsx b/src/components/landing/PricingSection.tsx
+new file mode 100644
+index 0000000..4686620
+--- /dev/null
++++ b/src/components/landing/PricingSection.tsx
+@@ -0,0 +1,138 @@
++import Link from 'next/link';
++
++const tiers = [
++  {
++    name: 'Pay Per Service',
++    price: 'Varies',
++    description: 'Book and pay for individual services with no commitment',
++    features: [
++      'No subscription required',
++      'Transparent pricing',
++      'Secure payment',
++      'Instant confirmation',
++      'Cancel anytime',
++    ],
++    cta: 'Browse Services',
++    ctaHref: '/auth/signup/customer',
++    highlighted: false,
++  },
++  {
++    name: 'Monthly Membership',
++    price: '£9.99/mo',
++    description: 'Save on regular beauty services with exclusive member perks',
++    features: [
++      '10% discount on all services',
++      'Priority booking',
++      'Exclusive member deals',
++      'Flexible scheduling',
++      'Cancel anytime',
++    ],
++    cta: 'Get Started',
++    ctaHref: '/auth/signup/customer',
++    highlighted: true,
++  },
++  {
++    name: 'Pro Package',
++    price: 'Custom',
++    description: 'Tailored packages for frequent customers who want the best',
++    features: [
++      'Up to 20% discount',
++      'Dedicated support',
++      'Custom scheduling',
++      'Package deals',
++      'VIP treatment',
++    ],
++    cta: 'Contact Us',
++    ctaHref: '#contact',
++    highlighted: false,
++  },
++];
++
++export function PricingSection() {
++  return (
++    <section id="pricing" className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
++      <div className="max-w-7xl mx-auto">
++        {/* Header */}
++        <div className="text-center mb-16">
++          <h2 className="text-4xl sm:text-5xl font-bold mb-4">
++            <span className="bg-gradient-to-r from-amber-700 to-orange-600 bg-clip-text text-transparent">
++              Simple, Transparent Pricing
++            </span>
++          </h2>
++          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
++            Choose the option that works best for you — no hidden fees, no surprises
++          </p>
++        </div>
++
++        {/* Pricing Cards */}
++        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
++          {tiers.map((tier) => (
++            <div
++              key={tier.name}
++              className={`relative rounded-2xl overflow-hidden transition-all duration-300 ${
++                tier.highlighted
++                  ? 'ring-2 ring-amber-700 shadow-2xl scale-105'
++                  : 'shadow-lg hover:shadow-xl'
++              }`}
++            >
++              {/* Most Popular badge */}
++              {tier.highlighted && (
++                <div className="bg-gradient-to-r from-amber-700 to-orange-600 text-white text-center py-2 text-sm font-bold tracking-wide">
++                  Most Popular
++                </div>
++              )}
++
++              <div
++                className={`p-8 ${
++                  tier.highlighted ? 'bg-white' : 'bg-amber-50/40'
++                }`}
++              >
++                {/* Title & Price */}
++                <h3 className="text-2xl font-bold mb-2 text-gray-900">{tier.name}</h3>
++                <p className="text-gray-500 text-sm mb-5 leading-relaxed">{tier.description}</p>
++                <div className="mb-6">
++                  <span className="text-4xl font-bold text-gray-900">{tier.price}</span>
++                </div>
++
++                {/* Features */}
++                <ul className="space-y-3 mb-8">
++                  {tier.features.map((feature) => (
++                    <li key={feature} className="flex items-center gap-3 text-gray-700 text-sm">
++                      <span className="text-amber-700 font-bold text-base flex-shrink-0">✓</span>
++                      {feature}
++                    </li>
++                  ))}
++                </ul>
++
++                {/* CTA */}
++                <Link
++                  href={tier.ctaHref}
++                  className={`block w-full text-center h-11 leading-[2.75rem] rounded-lg font-semibold transition-all text-sm ${
++                    tier.highlighted
++                      ? 'bg-gradient-to-r from-amber-700 to-orange-600 hover:from-amber-800 hover:to-orange-700 text-white shadow-md hover:shadow-lg'
++                      : 'bg-amber-100 hover:bg-amber-200 text-amber-800'
++                  }`}
++                >
++                  {tier.cta}
++                </Link>
++              </div>
++            </div>
++          ))}
++        </div>
++
++        {/* FAQ hint */}
++        <div className="mt-14 text-center">
++          <p className="text-gray-600">
++            Questions about pricing?{' '}
++            <Link
++              href="#contact"
++              className="text-amber-700 font-semibold hover:underline"
++            >
++              Get in touch with us
++            </Link>
++          </p>
++        </div>
++      </div>
++    </section>
++  );
++}
+diff --git a/src/components/landing/ServiceCard.tsx b/src/components/landing/ServiceCard.tsx
+new file mode 100644
+index 0000000..a92884a
+--- /dev/null
++++ b/src/components/landing/ServiceCard.tsx
+@@ -0,0 +1,58 @@
++'use client';
++
++import Link from 'next/link';
++
++interface ServiceCardProps {
++  icon: string;
++  title: string;
++  description: string;
++  category: string;
++  features: string[];
++  color: string;
++}
++
++export function ServiceCard({
++  icon,
++  title,
++  description,
++  category,
++  features,
++  color,
++}: ServiceCardProps) {
++  return (
++    <Link
++      href={`/home?category=${encodeURIComponent(category)}`}
++      className="group block h-full"
++    >
++      <div
++        className={`relative h-full rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2`}
++      >
++        {/* Background gradient */}
++        <div className={`absolute inset-0 ${color}`} />
++
++        {/* Content */}
++        <div className="relative h-full p-8 flex flex-col justify-between text-white">
++          {/* Icon & Title */}
++          <div>
++            <div className="text-5xl mb-4">{icon}</div>
++            <h3 className="text-2xl font-bold mb-2">{title}</h3>
++            <p className="text-sm opacity-90 mb-4">{description}</p>
++          </div>
++
++          {/* Features */}
++          <div className="space-y-2">
++            {features.map((feature, i) => (
++              <div key={i} className="text-sm flex items-center gap-2">
++                <span className="text-lg">✓</span>
++                {feature}
++              </div>
++            ))}
++          </div>
++
++          {/* Hover overlay */}
++          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300" />
++        </div>
++      </div>
++    </Link>
++  );
++}
+diff --git a/src/components/landing/ServicesSection.tsx b/src/components/landing/ServicesSection.tsx
+new file mode 100644
+index 0000000..2de1d86
+--- /dev/null
++++ b/src/components/landing/ServicesSection.tsx
+@@ -0,0 +1,98 @@
++import { ServiceCard } from './ServiceCard';
++
++const SERVICES = [
++  {
++    icon: '💅',
++    title: 'Nail Salon',
++    description: 'Professional nail care and art',
++    category: 'Nail Salon',
++    features: ['Manicure', 'Pedicure', 'Nail Art'],
++    color: 'bg-gradient-to-br from-pink-400 to-rose-500',
++  },
++  {
++    icon: '✂️',
++    title: 'Hair Salon',
++    description: 'Expert hair styling and coloring',
++    category: 'Hair Salon',
++    features: ['Haircut', 'Coloring', 'Styling'],
++    color: 'bg-gradient-to-br from-amber-400 to-orange-500',
++  },
++  {
++    icon: '💄',
++    title: 'Beauty',
++    description: 'Makeup and beauty treatments',
++    category: 'Beauty',
++    features: ['Makeup', 'Threading', 'Waxing'],
++    color: 'bg-gradient-to-br from-purple-400 to-pink-500',
++  },
++  {
++    icon: '💆',
++    title: 'Massage',
++    description: 'Therapeutic massage services',
++    category: 'Massage',
++    features: ['Swedish', 'Deep Tissue', 'Hot Stone'],
++    color: 'bg-gradient-to-br from-cyan-400 to-blue-500',
++  },
++  {
++    icon: '🧖',
++    title: 'Spa',
++    description: 'Relaxing spa treatments',
++    category: 'Spa',
++    features: ['Facials', 'Body Wraps', 'Sauna'],
++    color: 'bg-gradient-to-br from-green-400 to-emerald-500',
++  },
++  {
++    icon: '💪',
++    title: 'Personal Trainer',
++    description: 'Professional fitness training',
++    category: 'Personal Trainer',
++    features: ['1-on-1 Sessions', 'Group Classes', 'Coaching'],
++    color: 'bg-gradient-to-br from-red-400 to-orange-500',
++  },
++  {
++    icon: '🐕',
++    title: 'Pet Grooming',
++    description: 'Professional pet care',
++    category: 'Pet Grooming',
++    features: ['Bathing', 'Grooming', 'Styling'],
++    color: 'bg-gradient-to-br from-yellow-400 to-amber-500',
++  },
++  {
++    icon: '🎨',
++    title: 'Tattoo',
++    description: 'Custom tattoo artwork',
++    category: 'Tattoo',
++    features: ['Custom Design', 'Touch-ups', 'Removal Info'],
++    color: 'bg-gradient-to-br from-gray-600 to-slate-700',
++  },
++];
++
++export function ServicesSection() {
++  return (
++    <section id="services" className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
++      <div className="max-w-7xl mx-auto">
++        {/* Header */}
++        <div className="text-center mb-16">
++          <h2 className="text-4xl sm:text-5xl font-bold mb-4">
++            <span className="bg-gradient-to-r from-amber-700 to-orange-600 bg-clip-text text-transparent">
++              Services We Offer
++            </span>
++          </h2>
++          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
++            Explore a wide range of professional beauty, wellness, and personal care services
++          </p>
++        </div>
++
++        {/* Service Grid */}
++        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
++          {SERVICES.map((service) => (
++            <ServiceCard
++              key={service.category}
++              {...service}
++            />
++          ))}
++        </div>
++      </div>
++    </section>
++  );
++}
+diff --git a/src/components/landing/TestimonialsSection.tsx b/src/components/landing/TestimonialsSection.tsx
+new file mode 100644
+index 0000000..bce7491
+--- /dev/null
++++ b/src/components/landing/TestimonialsSection.tsx
+@@ -0,0 +1,73 @@
++import Link from 'next/link';
++
++const PLACEHOLDER_CARDS = [
++  { id: 1 },
++  { id: 2 },
++  { id: 3 },
++];
++
++export function TestimonialsSection() {
++  return (
++    <section id="testimonials" className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-orange-50 to-rose-50">
++      <div className="max-w-7xl mx-auto">
++        {/* Header */}
++        <div className="text-center mb-16">
++          <h2 className="text-4xl sm:text-5xl font-bold mb-4">
++            <span className="bg-gradient-to-r from-amber-700 to-orange-600 bg-clip-text text-transparent">
++              What Our Customers Say
++            </span>
++          </h2>
++          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
++            Real reviews from real customers — coming as our community grows.
++          </p>
++        </div>
++
++        {/* Placeholder Review Cards — 3-column grid */}
++        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
++          {PLACEHOLDER_CARDS.map(({ id }) => (
++            <div
++              key={id}
++              className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow border border-orange-100"
++            >
++              {/* 5-star row */}
++              <div className="flex gap-1 mb-4" aria-label="5 out of 5 stars">
++                {Array.from({ length: 5 }).map((_, i) => (
++                  <span key={i} className="text-xl text-yellow-400">★</span>
++                ))}
++              </div>
++
++              {/* Neutral placeholder review text */}
++              <p className="text-gray-500 mb-6 leading-relaxed italic">
++                "Customer review placeholder — genuine reviews will appear here once collected."
++              </p>
++
++              {/* Generic author block */}
++              <div className="flex items-center gap-4">
++                <div className="w-12 h-12 bg-gradient-to-br from-amber-200 to-orange-300 rounded-full flex items-center justify-center text-xl select-none">
++                  👤
++                </div>
++                <div>
++                  <div className="font-bold text-gray-900">Customer Name</div>
++                  <div className="text-sm text-gray-500">Service Category</div>
++                </div>
++              </div>
++            </div>
++          ))}
++        </div>
++
++        {/* Booking CTA */}
++        <div className="mt-16 text-center">
++          <p className="text-lg text-gray-700 mb-6">
++            Ready to experience quality beauty services?
++          </p>
++          <Link
++            href="/auth/signup/customer"
++            className="inline-flex items-center justify-center h-12 px-8 rounded-lg text-lg font-semibold text-white bg-gradient-to-r from-amber-700 to-orange-600 hover:from-amber-800 hover:to-orange-700 transition-all duration-300 hover:scale-105"
++          >
++            Book Your First Service
++          </Link>
++        </div>
++      </div>
++    </section>
++  );
++}

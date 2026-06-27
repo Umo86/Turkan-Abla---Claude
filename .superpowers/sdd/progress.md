@@ -83,3 +83,4 @@
 - Landing Task 5: complete (commit f5d1056, review clean) — testimonials (placeholders, no fake reviews).
 - Landing Task 6: complete (commit b0f20e3, review clean) — contact form + /api/contact (zod, 200/400/405 verified). Low: setTimeout cleanup on unmount; button size prop (defer to final).
 - Landing Task 7: complete (commit 27375ac, review clean) — CTA banner + footer. All 7 content tasks done.
+- Landing Task 8 (final review + fixes): complete (final review READY TO MERGE; fixes 1f7c3af) — category deep-link wired, quotes escaped, amber focus ring. Build clean (15/15 pages).
