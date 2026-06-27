@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Navigation } from '@/components/landing/Navigation';
 import { HeroSection } from '@/components/landing/HeroSection';
+import { ServicesSection } from '@/components/landing/ServicesSection';
 
 export const metadata: Metadata = {
   title: 'Türkan Abla - Beauty Services Platform',
@@ -12,6 +13,7 @@ export default function LandingPage() {
     <>
       <Navigation />
       <HeroSection />
+      <ServicesSection />
     </>
   );
 }
