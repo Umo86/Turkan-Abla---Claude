@@ -1,8 +1,8 @@
-import { adminDb } from '@/lib/firebase/admin';
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
   try {
+    const { adminDb } = await import('@/lib/firebase/admin');
     const { searchParams } = new URL(request.url);
     const q = searchParams.get('q');
     const category = searchParams.get('category');
