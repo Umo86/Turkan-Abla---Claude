@@ -6,6 +6,8 @@ import { AboutSection } from '@/components/landing/AboutSection';
 import { PricingSection } from '@/components/landing/PricingSection';
 import { TestimonialsSection } from '@/components/landing/TestimonialsSection';
 import { ContactSection } from '@/components/landing/ContactSection';
+import { CTASection } from '@/components/landing/CTASection';
+import { Footer } from '@/components/landing/Footer';
 
 export const metadata: Metadata = {
   title: 'Türkan Abla - Beauty Services Platform',
@@ -22,6 +24,8 @@ export default function LandingPage() {
       <PricingSection />
       <TestimonialsSection />
       <ContactSection />
+      <CTASection />
+      <Footer />
     </>
   );
 }
