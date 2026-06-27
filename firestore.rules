@@ -1,7 +1,134 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Placeholder: will be expanded in Task 2.3 with full security rules
+    // Helper functions
+    function isAuthenticated() { return request.auth != null; }
+    function userId() { return request.auth.uid; }
+    function userRole() { return request.auth.token.role; }
+    function userVendorId() { return request.auth.token.vendorId; }
+    function isOwner(resourceUid) { return userId() == resourceUid; }
+    function isVendor() { return userRole() == 'vendor'; }
+    function isCustomer() { return userRole() == 'customer'; }
+    function isStaff() { return userRole() == 'staff'; }
+    function isAdmin() { return request.auth.token.role == 'admin'; }
+
+    // Users (customers) - read own, write own
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      allow create: if isAuthenticated() && isOwner(userId) && request.resource.data.role == 'customer';
+      allow update, delete: if isOwner(userId);
+
+      match /loyaltyBalances/{document=**} {
+        allow read: if isOwner(userId);
+      }
+
+      match /savedVendors/{document=**} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // Vendors - read own, write own
+    match /vendors/{vendorId} {
+      allow read: if isAuthenticated() && (isOwner(resource.data.uid) || isCustomer() || isAdmin());
+      allow create: if isAuthenticated() && isVendor() && request.resource.data.uid == userId();
+      allow update, delete: if isOwner(resource.data.uid) || isAdmin();
+
+      // Services - vendor reads/writes own, customer reads for viewing
+      match /services/{serviceId} {
+        allow read: if isAuthenticated();
+        allow write: if isAuthenticated() && isOwner(resource.data.vendorId) || isAdmin();
+      }
+
+      // Staff - vendor reads own, staff reads/writes self
+      match /staff/{staffId} {
+        allow read: if isAuthenticated() && (isOwner(resource.data.uid) || isOwner(resource.data.vendorId) || isAdmin());
+        allow create: if isVendor() && request.resource.data.vendorId == userVendorId();
+        allow update, delete: if isOwner(resource.data.uid) || isOwner(resource.data.vendorId) || isAdmin();
+      }
+
+      // Bookings - vendor reads own, customer reads linked
+      match /bookings/{bookingId} {
+        allow read: if isAuthenticated() && (
+          resource.data.vendorId == userVendorId() ||
+          resource.data.customerId == userId() ||
+          isAdmin()
+        );
+        allow create: if isCustomer() && request.resource.data.vendorId == vendorId;
+        allow update: if isOwner(resource.data.vendorId) || isOwner(resource.data.customerId) || isAdmin();
+      }
+
+      // Wallet - vendor only
+      match /wallet {
+        allow read: if isOwner(resource.data.vendorId);
+        allow write: if isAdmin();
+      }
+
+      match /walletTransactions/{txnId} {
+        allow read: if isOwner(resource.data.vendorId);
+        allow write: if isAdmin();
+      }
+    }
+
+    // Bookings index (customer lookup)
+    match /bookings/{bookingId} {
+      allow read: if isAuthenticated() && (
+        resource.data.vendorId == userVendorId() ||
+        resource.data.customerId == userId() ||
+        isAdmin()
+      );
+      allow write: if isAdmin();
+    }
+
+    // Campaigns - vendor reads own, admin SDK only write
+    match /campaigns/{campaignId} {
+      allow read: if isAuthenticated() && (resource.data.vendorId == userVendorId() || isAdmin());
+      allow write: if isAdmin();
+    }
+
+    // Message log - admin SDK only (audit trail)
+    match /messageLog/{msgId} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // Suppression list - admin SDK only
+    match /suppressions/{suppressionId} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // Consent flags - admin SDK only (audit trail)
+    match /consentFlags/{userId} {
+      allow read: if isAdmin() || isOwner(userId);
+      allow write: if isAdmin();
+    }
+
+    // Offers - vendor reads own, customer reads public
+    match /offers/{offerId} {
+      allow read: if isAuthenticated() && (resource.data.vendorId == userVendorId() || isCustomer());
+      allow write: if isVendor() && request.resource.data.vendorId == userVendorId() || isAdmin();
+    }
+
+    // Reviews - customer writes own, all read public
+    match /reviews/{reviewId} {
+      allow read: if isAuthenticated();
+      allow create: if isCustomer() && request.resource.data.customerId == userId();
+      allow update, delete: if isOwner(resource.data.customerId) || isAdmin();
+    }
+
+    // Loyalty ledger - admin SDK only
+    match /loyaltyLedger/{ledgerId} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // Commission ledger - admin SDK only
+    match /commissionLedger/{ledgerId} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // Deny all other paths
     match /{document=**} {
       allow read, write: if false;
     }
