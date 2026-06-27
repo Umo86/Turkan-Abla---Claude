@@ -1,0 +1,297 @@
+=== COMMITS ===
+b0f20e3 feat: add contact form and contact section with API endpoint
+
+=== STAT ===
+ src/app/api/contact/route.ts              |  45 +++++++
+ src/app/page.tsx                          |   2 +
+ src/components/landing/ContactSection.tsx | 198 ++++++++++++++++++++++++++++++
+ 3 files changed, 245 insertions(+)
+
+=== DIFF ===
+diff --git a/src/app/api/contact/route.ts b/src/app/api/contact/route.ts
+new file mode 100644
+index 0000000..288ac5d
+--- /dev/null
++++ b/src/app/api/contact/route.ts
+@@ -0,0 +1,45 @@
++import { NextResponse } from 'next/server';
++import { z } from 'zod';
++
++const contactSchema = z.object({
++  name: z.string().min(2),
++  email: z.string().email(),
++  message: z.string().min(10),
++  phone: z.string().optional(),
++});
++
++export async function POST(request: Request) {
++  try {
++    const body = await request.json();
++    const parsed = contactSchema.safeParse(body);
++
++    if (!parsed.success) {
++      return NextResponse.json(
++        { error: 'Invalid form data', details: parsed.error.flatten() },
++        { status: 400 }
++      );
++    }
++
++    const { name, email, message, phone } = parsed.data;
++
++    // TODO: Send email notification to admin
++    // For now, log the submission server-side (no real email sending)
++    console.log('Contact form submission:', {
++      name,
++      email,
++      phone,
++      message,
++      timestamp: new Date().toISOString(),
++    });
++
++    return NextResponse.json(
++      { success: true, message: 'Thank you for contacting us. We will get back to you soon.' },
++      { status: 200 }
++    );
++  } catch (error) {
++    return NextResponse.json(
++      { error: 'Failed to process contact form' },
++      { status: 500 }
++    );
++  }
++}
+diff --git a/src/app/page.tsx b/src/app/page.tsx
+index 5a43885..c285550 100644
+--- a/src/app/page.tsx
++++ b/src/app/page.tsx
+@@ -1,25 +1,27 @@
+ import type { Metadata } from 'next';
+ import { Navigation } from '@/components/landing/Navigation';
+ import { HeroSection } from '@/components/landing/HeroSection';
+ import { ServicesSection } from '@/components/landing/ServicesSection';
+ import { AboutSection } from '@/components/landing/AboutSection';
+ import { PricingSection } from '@/components/landing/PricingSection';
+ import { TestimonialsSection } from '@/components/landing/TestimonialsSection';
++import { ContactSection } from '@/components/landing/ContactSection';
+ 
+ export const metadata: Metadata = {
+   title: 'Türkan Abla - Beauty Services Platform',
+   description: 'Book professional beauty and wellness services in the UK',
+ };
+ 
+ export default function LandingPage() {
+   return (
+     <>
+       <Navigation />
+       <HeroSection />
+       <ServicesSection />
+       <AboutSection />
+       <PricingSection />
+       <TestimonialsSection />
++      <ContactSection />
+     </>
+   );
+ }
+diff --git a/src/components/landing/ContactSection.tsx b/src/components/landing/ContactSection.tsx
+new file mode 100644
+index 0000000..a619543
+--- /dev/null
++++ b/src/components/landing/ContactSection.tsx
+@@ -0,0 +1,198 @@
++'use client';
++
++import { useState, FormEvent } from 'react';
++import { Button } from '@/components/ui/button';
++
++export function ContactSection() {
++  const [formData, setFormData] = useState({
++    name: '',
++    email: '',
++    phone: '',
++    message: '',
++  });
++  const [loading, setLoading] = useState(false);
++  const [submitted, setSubmitted] = useState(false);
++  const [error, setError] = useState<string | null>(null);
++
++  const handleChange = (
++    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
++  ) => {
++    const { name, value } = e.target;
++    setFormData((prev) => ({ ...prev, [name]: value }));
++  };
++
++  const handleSubmit = async (e: FormEvent) => {
++    e.preventDefault();
++    setLoading(true);
++    setError(null);
++
++    try {
++      const response = await fetch('/api/contact', {
++        method: 'POST',
++        headers: { 'Content-Type': 'application/json' },
++        body: JSON.stringify(formData),
++      });
++
++      if (response.ok) {
++        setSubmitted(true);
++        setFormData({ name: '', email: '', phone: '', message: '' });
++        setTimeout(() => setSubmitted(false), 5000);
++      } else {
++        const data = await response.json();
++        setError(data.error || 'Something went wrong. Please try again.');
++      }
++    } catch (err) {
++      console.error('Error submitting form:', err);
++      setError('Network error. Please check your connection and try again.');
++    } finally {
++      setLoading(false);
++    }
++  };
++
++  return (
++    <section id="contact" className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
++      <div className="max-w-4xl mx-auto">
++        {/* Header */}
++        <div className="text-center mb-16">
++          <h2 className="text-4xl sm:text-5xl font-bold mb-4">
++            <span className="bg-gradient-to-r from-amber-700 to-orange-600 bg-clip-text text-transparent">
++              Get In Touch
++            </span>
++          </h2>
++          <p className="text-lg text-gray-600">
++            Have questions? We&apos;d love to hear from you. Send us a message and we&apos;ll get back to you as soon as possible.
++          </p>
++        </div>
++
++        {/* Form */}
++        <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-8 lg:p-12">
++          {submitted && (
++            <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
++              Thank you for contacting us. We&apos;ll get back to you soon!
++            </div>
++          )}
++
++          {error && (
++            <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
++              {error}
++            </div>
++          )}
++
++          <form onSubmit={handleSubmit} className="space-y-6">
++            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
++              {/* Name */}
++              <div>
++                <label
++                  htmlFor="contact-name"
++                  className="block text-sm font-semibold text-gray-900 mb-2"
++                >
++                  Full Name
++                </label>
++                <input
++                  id="contact-name"
++                  type="text"
++                  name="name"
++                  value={formData.name}
++                  onChange={handleChange}
++                  required
++                  minLength={2}
++                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-700 focus:border-transparent outline-none transition bg-white"
++                  placeholder="Your name"
++                />
++              </div>
++
++              {/* Email */}
++              <div>
++                <label
++                  htmlFor="contact-email"
++                  className="block text-sm font-semibold text-gray-900 mb-2"
++                >
++                  Email Address
++                </label>
++                <input
++                  id="contact-email"
++                  type="email"
++                  name="email"
++                  value={formData.email}
++                  onChange={handleChange}
++                  required
++                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-700 focus:border-transparent outline-none transition bg-white"
++                  placeholder="your.email@example.com"
++                />
++              </div>
++            </div>
++
++            {/* Phone (optional) */}
++            <div>
++              <label
++                htmlFor="contact-phone"
++                className="block text-sm font-semibold text-gray-900 mb-2"
++              >
++                Phone Number <span className="text-gray-400 font-normal">(Optional)</span>
++              </label>
++              <input
++                id="contact-phone"
++                type="tel"
++                name="phone"
++                value={formData.phone}
++                onChange={handleChange}
++                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-700 focus:border-transparent outline-none transition bg-white"
++                placeholder="+44 123 456 7890"
++              />
++            </div>
++
++            {/* Message */}
++            <div>
++              <label
++                htmlFor="contact-message"
++                className="block text-sm font-semibold text-gray-900 mb-2"
++              >
++                Message
++              </label>
++              <textarea
++                id="contact-message"
++                name="message"
++                value={formData.message}
++                onChange={handleChange}
++                required
++                minLength={10}
++                rows={6}
++                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-700 focus:border-transparent outline-none transition resize-none bg-white"
++                placeholder="Tell us how we can help..."
++              />
++            </div>
++
++            {/* Submit Button */}
++            <Button
++              type="submit"
++              fullWidth
++              disabled={loading}
++              className="bg-gradient-to-r from-amber-700 to-orange-600 hover:from-amber-800 hover:to-orange-700 text-white font-bold py-3 rounded-lg transition-all"
++            >
++              {loading ? 'Sending...' : 'Send Message'}
++            </Button>
++          </form>
++        </div>
++
++        {/* Contact Info Row */}
++        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
++          <div className="text-center">
++            <div className="text-3xl mb-3">📧</div>
++            <h4 className="font-bold text-gray-900 mb-1">Email</h4>
++            <p className="text-gray-600 text-sm">support@turkanabla.uk</p>
++          </div>
++          <div className="text-center">
++            <div className="text-3xl mb-3">📱</div>
++            <h4 className="font-bold text-gray-900 mb-1">Phone</h4>
++            <p className="text-gray-600 text-sm">+44 (0) 123 456 7890</p>
++          </div>
++          <div className="text-center">
++            <div className="text-3xl mb-3">📍</div>
++            <h4 className="font-bold text-gray-900 mb-1">Location</h4>
++            <p className="text-gray-600 text-sm">United Kingdom</p>
++          </div>
++        </div>
++      </div>
++    </section>
++  );
++}

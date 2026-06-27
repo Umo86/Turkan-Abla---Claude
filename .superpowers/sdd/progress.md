@@ -81,3 +81,5 @@
 - Landing Task 3: complete (commit 345c9b3, review clean) — about + values. Cosmetic-only notes.
 - Landing Task 4: complete (commit bd9ed18, review clean) — pricing (3 tiers). Cosmetic: PricingSection.tsx:110 leading-[2.75rem] centering (defer to final).
 - Landing Task 5: complete (commit f5d1056, review clean) — testimonials (placeholders, no fake reviews).
+- Landing Task 6: complete (commit b0f20e3, review clean) — contact form + /api/contact (zod, 200/400/405 verified). Low: setTimeout cleanup on unmount; button size prop (defer to final).
+- Landing Task 7: complete (commit 27375ac, review clean) — CTA banner + footer. All 7 content tasks done.
