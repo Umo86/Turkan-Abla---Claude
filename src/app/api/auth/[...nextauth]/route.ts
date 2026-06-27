@@ -238,9 +238,6 @@ const authOptions: NextAuthConfig = {
         // Set custom claims on Firebase Auth token
         await setUserClaims(user.id, role, user.vendorId);
 
-        // Get vendor ID if applicable
-        const vendorId = await getVendorId(user.id, role);
-
         return {
           id: user.id,
           email: user.email,
@@ -248,7 +245,7 @@ const authOptions: NextAuthConfig = {
           image: null,
           // Custom fields (added to JWT and session)
           role,
-          vendorId,
+          vendorId: user.vendorId,
           verified: true,
         };
       },
