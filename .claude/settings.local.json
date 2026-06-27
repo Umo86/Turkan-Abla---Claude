@@ -21,7 +21,11 @@
       "Bash(java -version)",
       "Bash(node -e \"const fs = require\\('fs'\\); const config = JSON.parse\\(fs.readFileSync\\('firebase.json', 'utf8'\\)\\); console.log\\('Firebase.json structure:'\\); console.log\\('- Emulators configured:', Object.keys\\(config.emulators\\).join\\(', '\\)\\); console.log\\('- Firestore port:', config.emulators.firestore.port\\); console.log\\('- Auth port:', config.emulators.auth.port\\); console.log\\('- UI port:', config.emulators.ui.port\\); console.log\\('- UI enabled:', config.emulators.ui.enabled\\);\")",
       "Bash(node -e \"const fs = require\\('fs'\\); const indexes = JSON.parse\\(fs.readFileSync\\('firestore.indexes.json', 'utf8'\\)\\); console.log\\('Firestore indexes:'\\); indexes.indexes.forEach\\(\\(idx, i\\) => { const fields = idx.fields.map\\(f => f.fieldPath\\).join\\(', '\\); console.log\\('  ' + \\(i+1\\) + '. Collection:', idx.collectionGroup, '| Fields:', fields\\); }\\);\")",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(node -e \"const m = require\\('./src/lib/firebase/index.ts'\\); console.log\\('Successfully loaded firebase index'\\)\")",
+      "Bash(grep -c \"/\\\\*\\\\*\" src/lib/firebase/types.ts)",
+      "Bash(grep -c \"/\\\\*\\\\*\" src/lib/firebase/client.ts)",
+      "Bash(grep -c \"/\\\\*\\\\*\" src/lib/firebase/admin.ts)"
     ]
   }
 }

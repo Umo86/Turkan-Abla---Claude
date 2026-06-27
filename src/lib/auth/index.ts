@@ -232,7 +232,9 @@ export interface AuthSession {
     email?: string | null;
     name?: string | null;
     image?: string | null;
-    role?: 'customer' | 'vendor' | 'staff' | 'admin';
+    role: 'customer' | 'vendor' | 'staff' | 'admin';
+    vendorId?: string;
+    verified: boolean;
     emailVerified?: Date | null;
   };
   expires: string;
@@ -243,13 +245,29 @@ export interface AuthSession {
  */
 export interface AuthToken {
   sub: string; // User UID
+  id?: string;
   email?: string;
   name?: string;
   image?: string;
-  role?: 'customer' | 'vendor' | 'staff' | 'admin';
+  role: 'customer' | 'vendor' | 'staff' | 'admin';
+  vendorId?: string;
+  verified: boolean;
   emailVerified?: boolean;
   iat: number; // Issued at
   exp: number; // Expiration
+}
+
+// ============================================================================
+// NextAuth Module Augmentation
+// ============================================================================
+
+/**
+ * Augment next-auth module types for TypeScript support
+ * This ensures that session and token have our custom properties
+ */
+declare module 'next-auth' {
+  interface Session extends AuthSession {}
+  interface JWT extends AuthToken {}
 }
 
 // ============================================================================
