@@ -47,9 +47,9 @@ export default function CustomerHome() {
       <div className="sticky top-0 bg-white shadow-sm z-10 p-4">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">Türkan Abla</h1>
-          <Button variant="ghost" size="sm" onClick={() => router.push('/customer/account')}>
+          <button onClick={() => router.push('/customer/account')} className="text-2xl hover:opacity-75">
             👤
-          </Button>
+          </button>
         </div>
         <Input
           placeholder="Search vendors..."
