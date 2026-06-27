@@ -18,8 +18,8 @@
 ### Phase 4: Browsing ✅ COMPLETE (1/1)
 - [x] Task 4.1: Customer homepage (10b5962 + 9a015eb)
 
-### Phase 5: Bookings & Payments
-- [ ] Task 5.1: Booking flow + Stripe payment
+### Phase 5: Bookings & Payments ✅ COMPLETE (1/1)
+- [x] Task 5.1: Booking flow + Stripe payment (9950163)
 
 ---
 ## Completed Tasks
@@ -31,6 +31,7 @@
 - Task 2.3: commits 6a05664 + b390113 (37 tests, IDOR + precedence fixes) ✓
 - Task 3.1: commits 71704d0 + 61c82b1 + c8e2084 (fixes + approval) ✓
 - Task 4.1: commits 10b5962 + 9a015eb (homepage + search API) ✓
+- Task 5.1: commit 9950163 (booking flow + Stripe) ✓
 
 ---
 ## All Commits (14 total)
@@ -48,12 +49,12 @@
 ---
 ## Summary
 
-**Progress: 8 of 10 detailed tasks complete (80%)**
+**Progress: 9 of 10 detailed tasks complete (90%)**
 - Phase 1 complete (Foundation)
 - Phase 2 complete (Auth + Security)
 - Phase 3 complete (Vendor onboarding + Stripe)
 - Phase 4 complete (Customer browsing)
-- Phase 5 pending (Booking + Payment)
+- Phase 5 complete (Booking + Payment)
 
 **Testing:** 50+ comprehensive tests across all tasks
 **TypeScript:** Strict mode, zero compilation errors
