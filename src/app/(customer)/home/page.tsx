@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -17,6 +17,27 @@ const CATEGORIES = [
   { name: 'Tattoo', emoji: '🎨' },
 ];
 
+// Reads the ?category= param and calls the setter once on mount.
+// Must be wrapped in <Suspense> at the call site (Next.js 14 requirement).
+function CategoryParamReader({
+  onCategory,
+}: {
+  onCategory: (category: string) => void;
+}) {
+  const searchParams = useSearchParams();
+  const category = searchParams.get('category');
+
+  useEffect(() => {
+    if (category) {
+      onCategory(category);
+    }
+    // Only run once on mount — category is the stable query-string value.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return null;
+}
+
 export default function CustomerHome() {
   const router = useRouter();
   const [search, setSearch] = useState('');
@@ -24,12 +45,14 @@ export default function CustomerHome() {
   const [vendors, setVendors] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const handleSearch = async () => {
+  const handleSearch = async (categoryOverride?: string | null) => {
+    const effectiveCategory =
+      categoryOverride !== undefined ? categoryOverride : selectedCategory;
     setLoading(true);
     try {
       const params = new URLSearchParams();
       if (search) params.append('q', search);
-      if (selectedCategory) params.append('category', selectedCategory);
+      if (effectiveCategory) params.append('category', effectiveCategory);
 
       const res = await fetch(`/api/vendors/search?${params}`);
       const data = await res.json();
@@ -41,8 +64,19 @@ export default function CustomerHome() {
     }
   };
 
+  // Called by CategoryParamReader when a ?category= param is present.
+  const handleInitialCategory = (category: string) => {
+    setSelectedCategory(category);
+    handleSearch(category);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
+      {/* Read ?category= from the URL and seed state on mount */}
+      <Suspense fallback={null}>
+        <CategoryParamReader onCategory={handleInitialCategory} />
+      </Suspense>
+
       {/* Header */}
       <div className="sticky top-0 bg-white shadow-sm z-10 p-4">
         <div className="flex justify-between items-center mb-4">
@@ -68,7 +102,7 @@ export default function CustomerHome() {
               key={cat.name}
               onClick={() => {
                 setSelectedCategory(cat.name);
-                handleSearch();
+                handleSearch(cat.name);
               }}
               className={`p-4 rounded-lg text-center text-sm font-medium ${
                 selectedCategory === cat.name

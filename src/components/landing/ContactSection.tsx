@@ -167,7 +167,7 @@ export function ContactSection() {
               type="submit"
               fullWidth
               disabled={loading}
-              className="bg-gradient-to-r from-amber-700 to-orange-600 hover:from-amber-800 hover:to-orange-700 text-white font-bold py-3 rounded-lg transition-all"
+              className="bg-gradient-to-r from-amber-700 to-orange-600 hover:from-amber-800 hover:to-orange-700 text-white font-bold py-3 rounded-lg transition-all focus:ring-amber-500"
             >
               {loading ? 'Sending...' : 'Send Message'}
             </Button>

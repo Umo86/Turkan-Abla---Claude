@@ -38,7 +38,7 @@ export function TestimonialsSection() {
 
               {/* Neutral placeholder review text */}
               <p className="text-gray-500 mb-6 leading-relaxed italic">
-                "Customer review placeholder — genuine reviews will appear here once collected."
+                &ldquo;Customer review placeholder — genuine reviews will appear here once collected.&rdquo;
               </p>
 
               {/* Generic author block */}
