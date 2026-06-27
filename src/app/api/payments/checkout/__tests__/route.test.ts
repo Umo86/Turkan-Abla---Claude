@@ -10,8 +10,8 @@ const mockAuth = jest.fn();
 jest.mock('next-auth', () => {
   return jest.fn(() => ({ auth: mockAuth }));
 });
-// Use virtual mock so jest doesn't need to resolve the real module
-jest.mock('@/lib/auth/authOptions', () => ({ authOptions: {} }), { virtual: true });
+// Mock the auth options module
+jest.mock('@/lib/auth/authOptions', () => ({ authOptions: {} }));
 
 // Mock Stripe
 const mockCheckoutSessionsCreate = jest.fn();
@@ -34,7 +34,7 @@ const mockAdminDb = { collection: mockCollection };
 jest.mock('@/lib/firebase/admin', () => ({
   adminDb: mockAdminDb,
   getAdminDb: jest.fn(() => mockAdminDb),
-}), { virtual: true });
+}));
 
 // Helper to build a POST request
 function buildRequest(body: object): Request {
