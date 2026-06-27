@@ -135,35 +135,51 @@ export const getAdminAuth = (): Auth => {
 /**
  * Firebase Admin Firestore database instance
  * Use for server-side database operations with admin privileges
+ * Lazy-initialized on first access to avoid errors during build
  * @example
  * import { adminDb } from '@/lib/firebase/admin';
  * const userRef = adminDb.collection('users').doc(userId);
  * await userRef.update({ role: 'admin' });
  */
-export const adminDb = (() => {
-  try {
-    return getAdminDb();
-  } catch (error) {
-    console.error('Failed to initialize Firebase Admin Firestore:', error);
-    throw error;
-  }
-})();
+let cachedAdminDb: Firestore | null = null;
+
+export const adminDb = new Proxy({} as Firestore, {
+  get(target, prop) {
+    if (!cachedAdminDb) {
+      try {
+        cachedAdminDb = getAdminDb();
+      } catch (error) {
+        console.error('Failed to initialize Firebase Admin Firestore:', error);
+        throw error;
+      }
+    }
+    return (cachedAdminDb as any)[prop];
+  },
+});
 
 /**
  * Firebase Admin Auth instance
  * Use for server-side authentication operations with admin privileges
+ * Lazy-initialized on first access to avoid errors during build
  * @example
  * import { adminAuthInstance } from '@/lib/firebase/admin';
  * await adminAuthInstance.setCustomUserClaims(uid, { role: 'admin' });
  */
-export const adminAuthInstance = (() => {
-  try {
-    return getAdminAuth();
-  } catch (error) {
-    console.error('Failed to initialize Firebase Admin Auth:', error);
-    throw error;
-  }
-})();
+let cachedAdminAuth: Auth | null = null;
+
+export const adminAuthInstance = new Proxy({} as Auth, {
+  get(target, prop) {
+    if (!cachedAdminAuth) {
+      try {
+        cachedAdminAuth = getAdminAuth();
+      } catch (error) {
+        console.error('Failed to initialize Firebase Admin Auth:', error);
+        throw error;
+      }
+    }
+    return (cachedAdminAuth as any)[prop];
+  },
+});
 
 // ============================================================================
 // Helper Functions
