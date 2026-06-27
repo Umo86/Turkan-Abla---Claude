@@ -25,7 +25,10 @@
       "Bash(node -e \"const m = require\\('./src/lib/firebase/index.ts'\\); console.log\\('Successfully loaded firebase index'\\)\")",
       "Bash(grep -c \"/\\\\*\\\\*\" src/lib/firebase/types.ts)",
       "Bash(grep -c \"/\\\\*\\\\*\" src/lib/firebase/client.ts)",
-      "Bash(grep -c \"/\\\\*\\\\*\" src/lib/firebase/admin.ts)"
+      "Bash(grep -c \"/\\\\*\\\\*\" src/lib/firebase/admin.ts)",
+      "Bash(npm test *)",
+      "Bash(npm install *)",
+      "Bash(cd \"C:\\\\Users\\\\Umit\\\\Desktop\\\\Claude\\\\Turkan Abla\" && sed -n '235,253p' src/app/api/auth/[...nextauth]/route.ts)"
     ]
   }
 }
