@@ -5,7 +5,7 @@
 
 import { POST } from './route';
 import { NextRequest } from 'next/server';
-import { getServerSession } from 'next-auth';
+import getServerSession from 'next-auth';
 import * as stripeConnect from '@/lib/stripe/stripe-connect';
 import * as firebaseAdmin from '@/lib/firebase/admin';
 

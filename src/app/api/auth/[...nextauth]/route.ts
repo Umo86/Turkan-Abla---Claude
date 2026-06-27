@@ -342,5 +342,5 @@ export const POST: any = handler;
 // Exports for use in other files
 // ============================================================================
 
-// Export authOptions as a named export (but not at route handler level)
-// For external use, import from a separate auth.config.ts file if needed
+// Export authOptions for use in API routes that need session verification
+export { authOptions };

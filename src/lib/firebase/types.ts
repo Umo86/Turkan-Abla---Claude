@@ -103,8 +103,10 @@ export interface LowestPriceConfig {
 }
 
 export interface CommissionConfig {
-  defaultRate: number; // Percentage
-  staffCanSetOwnRates: boolean;
+  mode: 'off' | 'percentage' | 'fixed';
+  base?: 'servicePrice' | 'businessNet';
+  percent?: number;
+  fixedAmount?: number;
 }
 
 export interface LoyaltyConfig {
@@ -128,6 +130,7 @@ export interface Vendor {
   email: string;
   address: string;
   postcode: string;
+  borough: string;
 
   // Business Metadata
   opening_times: OpeningTimes;
@@ -146,8 +149,8 @@ export interface Vendor {
 
   // Marketing Consent
   consent: {
-    marketingSms: ConsentRecord;
-    marketingEmail: ConsentRecord;
+    vendorMarketingSms: boolean;
+    vendorMarketingEmail: boolean;
   };
 
   // Account metadata

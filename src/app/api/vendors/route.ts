@@ -9,6 +9,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import NextAuth from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { createConnectAccount } from '@/lib/stripe/stripe-connect';
 import type { Vendor, OpeningTimes } from '@/lib/firebase/types';
 
@@ -81,29 +83,22 @@ export async function POST(request: NextRequest) {
 
     const data = validation.data;
 
-    // Get Firebase services
-    const { adminDb } = await getFirebaseServices();
+    // Get session and verify vendor role (via NextAuth)
+    // Create auth instance for this route
+    const { auth: getAuth } = await NextAuth(authOptions);
+    const session = await getAuth();
 
-    // Get the user from Firestore using email (since they just signed in with this email)
-    // This ensures the user is authenticated and exists in the system
-    const usersRef = adminDb.collection('users');
-    const userQuery = await usersRef.where('email', '==', data.email).limit(1).get();
-
-    if (userQuery.empty) {
+    if (!session?.user?.id) {
       return NextResponse.json(
         {
           success: false,
-          error: 'Unauthorized - user not found',
+          error: 'Unauthorized - authentication required',
         },
         { status: 401 }
       );
     }
 
-    const userDoc = userQuery.docs[0];
-    const userId = userDoc.id;
-    const userRole = userDoc.data()?.role;
-
-    if (userRole !== 'vendor') {
+    if (session.user.role !== 'vendor') {
       return NextResponse.json(
         {
           success: false,
@@ -112,6 +107,11 @@ export async function POST(request: NextRequest) {
         { status: 403 }
       );
     }
+
+    const userId = session.user.id;
+
+    // Get Firebase services
+    const { adminDb } = await getFirebaseServices();
 
     // Create Stripe Connect account
     const stripeResult = await createConnectAccount(data.email, data.businessName);
@@ -138,25 +138,17 @@ export async function POST(request: NextRequest) {
       email: data.email,
       address: data.address || '',
       postcode: data.postcode,
+      borough: data.borough,
       opening_times: DEFAULT_OPENING_TIMES,
       stripe_account_id: stripeResult.accountId!,
       verification_status: 'pending',
       platform_commission_rate: 0.1, // 10% default commission
       commission_default: {
-        defaultRate: 0.1,
-        staffCanSetOwnRates: true,
+        mode: 'off',
       },
       consent: {
-        marketingSms: {
-          value: false,
-          ts: now,
-          source: 'signup',
-        },
-        marketingEmail: {
-          value: false,
-          ts: now,
-          source: 'signup',
-        },
+        vendorMarketingSms: false,
+        vendorMarketingEmail: false,
       },
       createdAt: now,
       updatedAt: now,
