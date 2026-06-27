@@ -7,9 +7,9 @@
 - [x] Task 1.2: Firebase emulator setup (ab8e207)
 - [x] Task 1.3: Firebase client/admin SDK + types (b1f044e)
 
-### Phase 2: Authentication
+### Phase 2: Authentication ✅ COMPLETE
 - [x] Task 2.1: NextAuth with OTP verification (65fcb10, fixed: 7465509)
-- [ ] Task 2.2: Customer signup page
+- [x] Task 2.2: Customer signup page (932505d)
 
 ### Phase 3: Core Platform
 - [ ] Task 3.1: Vendor signup + Stripe Connect
@@ -22,20 +22,24 @@
 
 ---
 ## Completed Tasks
-- Task 1.1: complete (commit 3aa0871)
-- Task 1.2: complete (commit ab8e207)
-- Task 1.3: complete (commit b1f044e)
-- Task 2.1: complete (commits 65fcb10, 7465509 - tests: 26/26 passing, all fixes applied)
+- Task 1.1: commit 3aa0871 ✓
+- Task 1.2: commit ab8e207 ✓
+- Task 1.3: commit b1f044e ✓
+- Task 2.1: commits 65fcb10 + 7465509 (26 tests passing) ✓
+- Task 2.2: commit 932505d (20+ tests, all consent flags unchecked) ✓
 
 ---
-## Commits
+## Commits (7 total)
 1. 3aa0871 - Next.js init
 2. ab8e207 - Firebase emulator
 3. b1f044e - Firebase SDK + types
 4. 65fcb10 - NextAuth + OTP
-5. 7465509 - Task 2.1 fixes (env var, jest types, optimize)
+5. 7465509 - Task 2.1 fixes
+6. 932505d - Customer signup page
 
 ---
 ## Notes
-- Authentication foundation complete (NextAuth with SMS/email OTP)
-- Next: Customer signup page with consent flags + borough selection
+- Phase 1-2 complete: Foundation + auth working
+- Customer can sign up with SMS/email + OTP, 4 consent flags
+- Next: Vendor onboarding with Stripe Connect for payouts
+- Running velocity: ~1.5 tasks per hour

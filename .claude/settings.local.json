@@ -28,7 +28,8 @@
       "Bash(grep -c \"/\\\\*\\\\*\" src/lib/firebase/admin.ts)",
       "Bash(npm test *)",
       "Bash(npm install *)",
-      "Bash(cd \"C:\\\\Users\\\\Umit\\\\Desktop\\\\Claude\\\\Turkan Abla\" && sed -n '235,253p' src/app/api/auth/[...nextauth]/route.ts)"
+      "Bash(cd \"C:\\\\Users\\\\Umit\\\\Desktop\\\\Claude\\\\Turkan Abla\" && sed -n '235,253p' src/app/api/auth/[...nextauth]/route.ts)",
+      "Bash(powershell -Command \"Select-String -Path 'src/app/api/auth/\\\\[...nextauth\\\\]/route.ts' -Pattern 'consent' -Context 2,5\")"
     ]
   }
 }
