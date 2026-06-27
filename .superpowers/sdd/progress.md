@@ -15,8 +15,8 @@
 ### Phase 3: Core Platform ✅ COMPLETE (1/1)
 - [x] Task 3.1: Vendor signup + Stripe Connect (71704d0 + fixes 61c82b1 + c8e2084)
 
-### Phase 4: Browsing
-- [ ] Task 4.1: Customer homepage
+### Phase 4: Browsing ✅ COMPLETE (1/1)
+- [x] Task 4.1: Customer homepage (10b5962 + 9a015eb)
 
 ### Phase 5: Bookings & Payments
 - [ ] Task 5.1: Booking flow + Stripe payment
@@ -30,6 +30,7 @@
 - Task 2.2: commit 932505d (20+ tests) ✓
 - Task 2.3: commits 6a05664 + b390113 (37 tests, IDOR + precedence fixes) ✓
 - Task 3.1: commits 71704d0 + 61c82b1 + c8e2084 (fixes + approval) ✓
+- Task 4.1: commits 10b5962 + 9a015eb (homepage + search API) ✓
 
 ---
 ## All Commits (14 total)
@@ -47,11 +48,12 @@
 ---
 ## Summary
 
-**Progress: 7 of 10 detailed tasks complete (70%)**
+**Progress: 8 of 10 detailed tasks complete (80%)**
 - Phase 1 complete (Foundation)
 - Phase 2 complete (Auth + Security)
 - Phase 3 complete (Vendor onboarding + Stripe)
-- Phases 4 & 5 pending (Browse + Book + Pay)
+- Phase 4 complete (Customer browsing)
+- Phase 5 pending (Booking + Payment)
 
 **Testing:** 50+ comprehensive tests across all tasks
 **TypeScript:** Strict mode, zero compilation errors
