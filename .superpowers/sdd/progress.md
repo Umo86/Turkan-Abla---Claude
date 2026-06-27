@@ -73,3 +73,11 @@
 - All critical path foundation + security rules complete
 - Ready to build shopping experience (Phase 4) and transactions (Phase 5)
 - Multi-tenant isolation fully enforced at database layer with comprehensive unit tests
+
+---
+## Landing Page (plan: 2026-06-27-landing-page.md), base 5a6b7c6
+- Landing Task 1: complete (commit 63fec1e, review clean) — hero + nav + root page
+- Landing Task 2: complete (commit df08d68, review clean) — services grid (8 cards). Minor: ServiceCard.tsx:45 key={i} (defer to final)
+- Landing Task 3: complete (commit 345c9b3, review clean) — about + values. Cosmetic-only notes.
+- Landing Task 4: complete (commit bd9ed18, review clean) — pricing (3 tiers). Cosmetic: PricingSection.tsx:110 leading-[2.75rem] centering (defer to final).
+- Landing Task 5: complete (commit f5d1056, review clean) — testimonials (placeholders, no fake reviews).
